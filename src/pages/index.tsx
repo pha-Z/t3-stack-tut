@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
 import Image from "next/image";
+import { LoadingPage } from "~/components/loading";
 import { api, type RouterOutputs } from "~/utils/api";
 
 dayjs.extend(relativeTime);
@@ -20,7 +21,7 @@ const ProfileImg = ({ imageUrl }: { imageUrl: string }) => (
 );
 
 const CreatePostWizard = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   console.log(user);
 
   if (!user) return null;
@@ -48,17 +49,34 @@ const PostView = (props: PostWithAuthor) => {
           <span>{`@${author.username}  ·  `}</span>
           <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
         </div>
-        <span>{post.content}</span>
+        <span className="text-2xl">{post.content}</span>
       </div>
     </div>
   );
 };
 
-export default function Home() {
-  const user = useUser();
-  const { data, isLoading } = api.posts.getAll.useQuery();
-  if (isLoading) return <div>Loading...</div>;
+const Feed = () => {
+  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+
   if (!data) return <div>Something went wrong</div>;
+  if (postsLoading) return <LoadingPage />;
+
+  return (
+    <div className="">
+      {data.map((postWithAuthor) => (
+        <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
+      ))}
+    </div>
+  );
+};
+
+export default function Home() {
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
+
+  // start fetching asap
+  api.posts.getAll.useQuery();
+
+  if (!userLoaded) return <div />;
 
   return (
     <>
@@ -71,13 +89,9 @@ export default function Home() {
         <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
           <div className="h-22 flex items-center justify-between border-b border-slate-400 p-4">
             <CreatePostWizard />
-            {user.isSignedIn ? <SignOutButton /> : <SignInButton />}
+            {isSignedIn ? <SignOutButton /> : <SignInButton />}
           </div>
-          <div className="">
-            {data.map((postWithAuthor) => (
-              <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>
