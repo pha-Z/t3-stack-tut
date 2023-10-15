@@ -22,7 +22,6 @@
     "@trpc/server": "^10.37.1",
     "@upstash/ratelimit": "^0.4.4",
     "@upstash/redis": "^1.23.3",
-    "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
     "next": "^13.5.4",
     "react": "18.2.0",
@@ -30,7 +29,6 @@
     "react-hook-form": "^7.47.0",
     "react-hot-toast": "^2.4.1",
     "superjson": "^1.13.1",
-    "tailwind-merge": "^1.14.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
