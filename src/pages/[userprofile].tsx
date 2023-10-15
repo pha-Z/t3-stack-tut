@@ -1,17 +1,14 @@
-import { createServerSideHelpers } from "@trpc/react-query/server";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import superjson from "superjson";
-import { appRouter } from "~/server/api/root";
-import { db } from "~/server/db";
 import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const UserProfileFeed = ({ authorId }: { authorId: string }) => {
-  const { data: userPosts, isLoading } = api.posts.getPostsByAuthorId.useQuery({
+  const { data: userPosts, isLoading } = api.posts.getByAuthorId.useQuery({
     authorId,
   });
 
@@ -68,18 +65,13 @@ export default UserProfile;
 export const getStaticPaths = () => ({ paths: [], fallback: "blocking" });
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssgHelpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: { db, currentUserId: null },
-    transformer: superjson, // optional - adds superjson serialization
-  });
-
   const userProfileUrl = context.params?.userprofile; // no typesafety here :c
   if (typeof userProfileUrl !== "string") throw new Error("no user profile");
 
   const username = userProfileUrl.replace("@", "");
 
-  await ssgHelpers.userProfile.getUserByUsername.prefetch({ username });
+  const ssgHelper = generateSSGHelper();
+  await ssgHelper.userProfile.getUserByUsername.prefetch({ username });
 
-  return { props: { trpcState: ssgHelpers.dehydrate(), username } };
+  return { props: { trpcState: ssgHelper.dehydrate(), username } };
 };

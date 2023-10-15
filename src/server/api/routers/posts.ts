@@ -1,5 +1,6 @@
 import { clerkClient } from "@clerk/nextjs";
 import type { Post } from "@prisma/client";
+import { contextProps } from "@trpc/react-query/shared";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis/nodejs";
@@ -56,7 +57,18 @@ export const postsRouter = createTRPCRouter({
     return addAuthorDataToPost(posts);
   }),
 
-  getPostsByAuthorId: publicProcedure
+  getById: publicProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({
+        where: { id: input.postId },
+      });
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return (await addAuthorDataToPost([post]))[0];
+    }),
+
+  getByAuthorId: publicProcedure
     .input(z.object({ authorId: z.string() }))
     .query(({ ctx, input }) =>
       ctx.db.post
