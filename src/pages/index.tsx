@@ -1,14 +1,16 @@
-import { SignInButton, SignOutButton, auth, useUser } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
 import Image from "next/image";
-import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { api, type RouterOutputs } from "~/utils/api";
 
 dayjs.extend(relativeTime);
 
 const ProfileImg = ({ imageUrl }: { imageUrl: string }) => (
+  // todo: up profile quality (change to .png or sth)
   <Image
     src={imageUrl}
     alt="Profile image"
@@ -21,20 +23,37 @@ const ProfileImg = ({ imageUrl }: { imageUrl: string }) => (
 );
 
 const CreatePostWizard = () => {
-  const { user, isLoaded } = useUser();
-  console.log(user);
+  const { user } = useUser();
+  const [input, setInput] = useState("");
+  const ctx = api.useContext(); // dont inline this or invalidate() wont work as expected 🤷‍♂️
+  const { mutate: createPost, isLoading: isPosting } =
+    api.posts.create.useMutation({
+      onSuccess: () => {
+        setInput("");
+        void ctx.posts.invalidate();
+      },
+    });
 
   if (!user) return null;
 
   return (
-    <div className="flex gap-3">
+    <form action="#" className="flex gap-3">
       <ProfileImg imageUrl={user.imageUrl} />
       <input
         type="text"
-        placeholder="take over the world!"
-        className="bg-transparent px-2 outline-none"
+        placeholder="type some emojis 👀"
+        className="bg-transparent px-2 text-2xl outline-none"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
-    </div>
+      <div className="flex items-center">
+        {isPosting ? (
+          <LoadingSpinner />
+        ) : (
+          <button onClick={() => createPost({ content: input })}>Post</button>
+        )}
+      </div>
+    </form>
   );
 };
 
@@ -42,7 +61,7 @@ type PostWithAuthor = RouterOutputs["posts"]["getAll"][number];
 const PostView = (props: PostWithAuthor) => {
   const { post, author } = props;
   return (
-    <div className="flex items-center gap-3 border-b border-slate-400 p-8">
+    <div className="flex items-center gap-3 border-b border-slate-400 p-4 ">
       <ProfileImg imageUrl={author.imageUrl} />
       <div className="flex flex-col">
         <div className="whitespace-pre text-slate-300">
