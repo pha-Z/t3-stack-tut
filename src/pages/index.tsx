@@ -6,6 +6,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { api, type RouterOutputs } from "~/utils/api";
+import toast from "react-hot-toast";
+import { error } from "console";
 
 dayjs.extend(relativeTime);
 
@@ -31,6 +33,10 @@ const CreatePostWizard = () => {
       onSuccess: () => {
         setInput("");
         void ctx.posts.invalidate();
+      },
+      onError: (e) => {
+        const errorMsg = e.data?.zodError?.fieldErrors.content;
+        toast.error(errorMsg?.[0] ?? "Failed to post! Please try again later.");
       },
     });
 
