@@ -6,6 +6,22 @@ import { ProfileImg } from "~/components/profileImg";
 import { appRouter } from "~/server/api/root";
 import { db } from "~/server/db";
 import { api } from "~/utils/api";
+import { LoadingPage } from "~/components/loading";
+import { PostView } from "~/components/postview";
+
+const UserProfileFeed = ({ authorId }: { authorId: string }) => {
+  const { data: userPosts, isLoading } = api.posts.getPostsByAuthorId.useQuery({
+    authorId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+  if (!userPosts || userPosts.length === 0)
+    return <div>The user has not posted anything yet.</div>;
+
+  return userPosts.map((postWithAuthor) => (
+    <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
+  ));
+};
 
 const UserProfile: NextPage<{ username: string }> = ({ username }) => {
   const { data: userProfile } = api.userProfile.getUserByUsername.useQuery({
@@ -37,7 +53,7 @@ const UserProfile: NextPage<{ username: string }> = ({ username }) => {
         </div>
         <div className="text-2xl ">@{userProfile.username ?? ""}</div>
       </div>
-      <div className="">{/* user posts */}</div>
+      <UserProfileFeed authorId={userProfile.id} />
     </>
   );
 };

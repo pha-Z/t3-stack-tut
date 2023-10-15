@@ -1,15 +1,16 @@
 import { clerkClient } from "@clerk/nextjs";
+import type { Post } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis/nodejs";
+import { z } from "zod";
 import { postContentSchema } from "~/schemas/postSchema";
-import { filterUserForClient } from "~/server/helpers/filterUserForClient";
-
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 // Create a new ratelimiter, that allows 3 requests per minute
 const ratelimit = new Ratelimit({
@@ -24,6 +25,27 @@ const ratelimit = new Ratelimit({
   prefix: "@upstash/ratelimit",
 });
 
+const addAuthorDataToPost = async (posts: Post[]) => {
+  const users = (
+    await clerkClient.users.getUserList({
+      userId: posts.map((post) => post.authorId),
+      limit: 100,
+    })
+  ).map(filterUserForClient);
+
+  return posts.map((post) => {
+    const author = users.find((user) => user.id === post.authorId);
+    if (!author?.username) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Author not found",
+      });
+    }
+
+    return { post, author: { ...author, username: author.username } }; // destructuring because typescript type safety is stupid
+  });
+};
+
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.db.post.findMany({
@@ -31,25 +53,20 @@ export const postsRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
     });
 
-    const users = (
-      await clerkClient.users.getUserList({
-        userId: posts.map((post) => post.authorId),
-        limit: 100,
-      })
-    ).map(filterUserForClient);
-
-    return posts.map((post) => {
-      const author = users.find((user) => user.id === post.authorId);
-      if (!author?.username) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Author not found",
-        });
-      }
-
-      return { post, author: { ...author, username: author.username } }; // destructuring because typescript type safety is stupid
-    });
+    return addAuthorDataToPost(posts);
   }),
+
+  getPostsByAuthorId: publicProcedure
+    .input(z.object({ authorId: z.string() }))
+    .query(({ ctx, input }) =>
+      ctx.db.post
+        .findMany({
+          where: { authorId: input.authorId },
+          take: 100,
+          orderBy: { createdAt: "desc" },
+        })
+        .then(addAuthorDataToPost),
+    ),
 
   create: privateProcedure
     .input(postContentSchema)
