@@ -20,19 +20,24 @@ const UserProfile: NextPage<{ username: string }> = ({ username }) => {
       <Head>
         <title>{userProfile.username}</title>
       </Head>
-      <div className="h-36 w-full bg-slate-600">banner</div>
-      <div className="w-full border-b border-slate-400 pb-6 pl-6">
+      <div className="flex h-48 w-full flex-col justify-end bg-slate-600">
+        {/* banner */}
         <ProfileImg
           imageUrl={userProfile.imageUrl}
           alt={`${userProfile.username ?? ""}'s profile image`}
-          size={128}
-          className="-mt-[64px] border-4 border-black bg-black"
+          size={144}
+          className="-mb-[64px] ml-4 border-4 border-black bg-black"
         />
-        {/* <button className="flex items-center rounded-full border px-3 py-2">
-          edit profile
-        </button> */}
-        <div className="text-2xl font-bold">@{userProfile.username ?? ""}</div>
       </div>
+      <div className="w-full border-b border-slate-400 px-6 pb-5 font-bold">
+        <div className="flex h-[72px] items-center justify-end">
+          <button className="h-fit rounded-full border border-slate-400 px-5 py-2">
+            Edit profile
+          </button>
+        </div>
+        <div className="text-2xl ">@{userProfile.username ?? ""}</div>
+      </div>
+      <div className="">{/* user posts */}</div>
     </>
   );
 };
