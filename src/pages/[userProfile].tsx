@@ -60,23 +60,21 @@ const UserProfile: NextPage<{ username: string }> = ({ username }) => {
 
 export default UserProfile;
 
-export const getStaticPaths = () => ({ paths: [], fallback: "blocking" });
+// export const getStaticPaths = () => ({ paths: [], fallback: "blocking" });
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  const ssgHelpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: { db, currentUserId: null },
-    transformer: superjson, // optional - adds superjson serialization
-  });
+// export const getStaticProps: GetStaticProps = async (context) => {
+//   const ssgHelpers = createServerSideHelpers({
+//     router: appRouter,
+//     ctx: { db, currentUserId: null },
+//     transformer: superjson, // optional - adds superjson serialization
+//   });
 
-  const userProfileUrl = context.params?.userProfile;
-  if (typeof userProfileUrl !== "string") throw new Error("no user profile");
+//   const userProfileUrl = context.params?.userProfile;
+//   if (typeof userProfileUrl !== "string") throw new Error("no user profile");
 
-  const username = userProfileUrl.replace("@", "");
+//   const username = userProfileUrl.replace("@", "");
 
-  await ssgHelpers.userProfile.getUserByUsername.prefetch({
-    username: username,
-  });
+//   await ssgHelpers.userProfile.getUserByUsername.prefetch({ username });
 
-  return { props: { trpcState: ssgHelpers.dehydrate(), username } };
-};
+//   return { props: { trpcState: ssgHelpers.dehydrate(), username } };
+// };
