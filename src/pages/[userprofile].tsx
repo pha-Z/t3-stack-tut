@@ -8,6 +8,7 @@ import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 
 const UserProfileFeed = ({ authorId }: { authorId: string }) => {
   const { data: userPosts, isLoading } = api.posts.getPostsByAuthorId.useQuery({
@@ -24,6 +25,7 @@ const UserProfileFeed = ({ authorId }: { authorId: string }) => {
 };
 
 const UserProfile: NextPage<{ username: string }> = ({ username }) => {
+  const { user, isSignedIn } = useUser();
   const { data: userProfile } = api.userProfile.getUserByUsername.useQuery({
     username,
   });
@@ -48,9 +50,11 @@ const UserProfile: NextPage<{ username: string }> = ({ username }) => {
       </div>
       <div className="w-full border-b border-slate-400 px-6 pb-5 font-bold">
         <div className="flex h-[72px] items-center justify-end">
-          <button className="h-fit rounded-full border border-slate-400 px-5 py-2">
-            Edit profile
-          </button>
+          {isSignedIn && user.username === username && (
+            <button className="h-fit rounded-full border border-slate-400 px-5 py-2">
+              Edit profile
+            </button>
+          )}
         </div>
         <div className="text-2xl ">@{userProfile.username ?? ""}</div>
       </div>
@@ -70,7 +74,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     transformer: superjson, // optional - adds superjson serialization
   });
 
-  const userProfileUrl = context.params?.userProfile;
+  const userProfileUrl = context.params?.userprofile; // no typesafety here :c
   if (typeof userProfileUrl !== "string") throw new Error("no user profile");
 
   const username = userProfileUrl.replace("@", "");
