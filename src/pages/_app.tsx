@@ -4,12 +4,21 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
+import Head from "next/head";
+import { Container } from "~/components/container";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
+      <Head>
+        <title>Emoji Twitter</title>
+        <meta name="description" content="🍿" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Toaster position="bottom-center" />
-      <Component {...pageProps} />
+      <Container>
+        <Component {...pageProps} />
+      </Container>
     </ClerkProvider>
   );
 };

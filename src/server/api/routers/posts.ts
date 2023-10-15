@@ -1,9 +1,9 @@
 import { clerkClient } from "@clerk/nextjs";
-import type { User } from "@clerk/nextjs/dist/types/server";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis/nodejs";
 import { postContentSchema } from "~/schemas/postSchema";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 import {
   createTRPCRouter,
@@ -23,10 +23,6 @@ const ratelimit = new Ratelimit({
    */
   prefix: "@upstash/ratelimit",
 });
-
-const filterUserForClient = (user: User) => {
-  return { id: user.id, username: user.username, imageUrl: user.imageUrl };
-};
 
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
