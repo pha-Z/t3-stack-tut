@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postContentSchema } from "~/schemas/postSchema";
 import { type z } from "zod";
+import Link from "next/link";
 
 dayjs.extend(relativeTime);
 
@@ -89,8 +90,13 @@ const PostView = (props: PostWithAuthor) => {
       <ProfileImg imageUrl={author.imageUrl} />
       <div className="flex flex-col">
         <div className="whitespace-pre text-slate-300">
-          <span>{`@${author.username}  ·  `}</span>
-          <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
+          <Link href={`/@${author.username}`}>
+            <span>{`@${author.username}`}</span>
+          </Link>
+          {"  ·  "}
+          <Link href={`/posts/${post.id}`}>
+            <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
+          </Link>
         </div>
         <span className="text-2xl">{post.content}</span>
       </div>
