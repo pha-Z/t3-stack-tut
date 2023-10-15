@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postContentSchema } from "~/schemas/postSchema";
 import { type z } from "zod";
-import { ProfileImg } from "~/components/profileImg";
 import { PostView } from "~/components/postview";
+import Image from "next/image";
 
 dayjs.extend(relativeTime);
 
@@ -42,7 +42,14 @@ const CreatePostWizard = () => {
       className="flex items-center gap-3 text-2xl"
       onSubmit={(e) => void handleSubmit((post) => createPost(post))(e)} // explicit `e`, otherwise it doesnt preventDefault 🤷‍♂️
     >
-      <ProfileImg imageUrl={user.imageUrl} />
+      <Image
+        src={user.imageUrl}
+        alt={`${user.username ?? ""}'s profile image`}
+        width={56}
+        height={56}
+        className="rounded-full"
+        quality={100}
+      />
       <input
         {...register("content")}
         type="text"

@@ -2,12 +2,12 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import superjson from "superjson";
-import { ProfileImg } from "~/components/profileImg";
 import { appRouter } from "~/server/api/root";
 import { db } from "~/server/db";
 import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
+import Image from "next/image";
 
 const UserProfileFeed = ({ authorId }: { authorId: string }) => {
   const { data: userPosts, isLoading } = api.posts.getPostsByAuthorId.useQuery({
@@ -38,11 +38,12 @@ const UserProfile: NextPage<{ username: string }> = ({ username }) => {
       </Head>
       <div className="flex h-48 w-full flex-col justify-end bg-slate-600">
         {/* banner */}
-        <ProfileImg
-          imageUrl={userProfile.imageUrl}
+        <Image
+          src={userProfile.imageUrl}
           alt={`${userProfile.username ?? ""}'s profile image`}
-          size={144}
-          className="-mb-[64px] ml-4 border-4 border-black bg-black"
+          width={144}
+          height={144}
+          className="-mb-[64px] ml-4 rounded-full border-4 border-black bg-black"
         />
       </div>
       <div className="w-full border-b border-slate-400 px-6 pb-5 font-bold">
