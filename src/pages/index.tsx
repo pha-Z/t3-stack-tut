@@ -38,34 +38,30 @@ const CreatePostWizard = () => {
   if (!user) return;
 
   return (
-    <div className="flex items-center gap-3 text-2xl">
+    <form
+      className="flex items-center gap-3 text-2xl"
+      onSubmit={(e) => void handleSubmit((post) => createPost(post))(e)} // explicit `e`, otherwise it doesnt preventDefault 🤷‍♂️
+    >
       <ProfileImg imageUrl={user.imageUrl} />
       <input
         {...register("content")}
         type="text"
         autoComplete="off"
-        placeholder="type some emojis 👀"
+        placeholder="type some emojis... 👀"
         className="bg-transparent px-2 outline-none"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            errors.content
-              ? toast.error(`${errors.content.message}`)
-              : void handleSubmit((post) => createPost(post))(e);
-          }
-        }}
+        onKeyDown={(e) =>
+          e.key === "Enter" &&
+          errors.content &&
+          toast.error(`${errors.content.message}`)
+        }
       />
       <button
-        disabled={isSubmitting}
+        disabled={isSubmitting || !!errors.content}
         className="flex h-[50px] min-w-[50px] items-center justify-center rounded-full bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700"
-        onClick={(e) => {
-          errors.content
-            ? toast.error(`${errors.content.message}`)
-            : void handleSubmit((post) => createPost(post))(e);
-        }}
       >
         {isSubmitting ? <LoadingSpinner size={20} /> : "📢"}
       </button>
-    </div>
+    </form>
   );
 };
 
@@ -94,8 +90,8 @@ const PostView = (props: PostWithAuthor) => {
 const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
-  if (!data) return <div>Something went wrong</div>;
   if (postsLoading) return <LoadingPage />;
+  if (!data) return <div>Something went wrong</div>;
 
   return (
     <div className="">
