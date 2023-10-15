@@ -5,4 +5,22 @@
 body {
   @apply bg-black text-slate-100;
   overscroll-behavior: none;
+  scrollbar-color: rgb(241 245 249) #0000;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #454a4d;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #575e62;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #202324;
 }
