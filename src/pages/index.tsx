@@ -3,11 +3,13 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { api, type RouterOutputs } from "~/utils/api";
 import toast from "react-hot-toast";
-import { error } from "console";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { postContentSchema } from "~/schemas/postSchema";
+import { type z } from "zod";
 
 dayjs.extend(relativeTime);
 
@@ -25,41 +27,57 @@ const ProfileImg = ({ imageUrl }: { imageUrl: string }) => (
 );
 
 const CreatePostWizard = () => {
-  const { user } = useUser();
-  const [input, setInput] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<z.infer<typeof postContentSchema>>({
+    resolver: zodResolver(postContentSchema),
+  });
   const ctx = api.useContext(); // dont inline this or invalidate() wont work as expected 🤷‍♂️
-  const { mutate: createPost, isLoading: isPosting } =
-    api.posts.create.useMutation({
-      onSuccess: () => {
-        setInput("");
-        void ctx.posts.invalidate();
-      },
-      onError: (e) => {
-        const errorMsg = e.data?.zodError?.fieldErrors.content;
-        toast.error(errorMsg?.[0] ?? "Failed to post! Please try again later.");
-      },
-    });
+  const { mutate: createPost } = api.posts.create.useMutation({
+    onSuccess: () => {
+      void ctx.posts.invalidate();
+      reset();
+    },
+    onError: (e) => {
+      const errorMsg = e.data?.zodError?.fieldErrors.content;
+      toast.error(errorMsg?.[0] ?? "Failed to post! Please try again later.");
+    },
+  });
+  const { user } = useUser();
 
-  if (!user) return null;
-
+  if (!user) return;
   return (
-    <form action="#" className="flex gap-3">
+    <div className="flex gap-3 text-2xl">
       <ProfileImg imageUrl={user.imageUrl} />
       <input
+        {...register("content")}
         type="text"
+        autoComplete="off"
         placeholder="type some emojis 👀"
-        className="bg-transparent px-2 text-2xl outline-none"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
+        className="bg-transparent px-2 outline-none"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            errors.content
+              ? toast.error(`${errors.content.message}`)
+              : void handleSubmit((post) => createPost(post))(e);
+          }
+        }}
       />
-      <div className="flex items-center">
-        {isPosting ? (
-          <LoadingSpinner />
-        ) : (
-          <button onClick={() => createPost({ content: input })}>Post</button>
-        )}
-      </div>
-    </form>
+      <button
+        disabled={isSubmitting}
+        className="flex w-24 items-center justify-center rounded-full bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700"
+        onClick={(e) => {
+          errors.content
+            ? toast.error(`${errors.content.message}`)
+            : void handleSubmit((post) => createPost(post))(e);
+        }}
+      >
+        {isSubmitting ? <LoadingSpinner size={20} /> : "📢"}
+      </button>
+    </div>
   );
 };
 
