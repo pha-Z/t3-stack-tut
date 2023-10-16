@@ -4,7 +4,7 @@ export const postContentSchema = z.object({
     .string()
     .min(1)
     .max(280)
-    // check for `emoji` or `emoji ` (with whitespace)
+    // check for `emoji` or `emoji ` https://regexper.com/#%2F%5E%28%5Cp%7BEmoji%7D%7C%28%5Cp%7BEmoji%7D%5Cs%29%29%2B%24%2Fu
     .regex(/^(\p{Emoji}|(\p{Emoji}\s))+$/u, {
       message: "use emojis only!",
     })
