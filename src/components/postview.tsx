@@ -30,7 +30,7 @@ export const PostView = (props: PostWithAuthor) => {
             <span className="font-thin">{dayjs(post.createdAt).fromNow()}</span>
           </Link>
         </div>
-        <span className="text-2xl">{post.content}</span>
+        <span className="break-words text-2xl">{post.content}</span>
       </div>
     </div>
   );
