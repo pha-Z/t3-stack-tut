@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-black text-slate-100;
+  @apply bg-zinc-950 text-zinc-300;
   overscroll-behavior: none;
   scrollbar-color: rgb(241 245 249) #0000;
   scrollbar-width: none;

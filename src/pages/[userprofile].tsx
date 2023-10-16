@@ -6,6 +6,7 @@ import { PostView } from "~/components/postview";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+import { Container } from "~/components/container";
 
 const UserProfileFeed = ({ authorId }: { authorId: string }) => {
   const { data: userPosts, isLoading } = api.posts.getByAuthorId.useQuery({
@@ -16,9 +17,13 @@ const UserProfileFeed = ({ authorId }: { authorId: string }) => {
   if (!userPosts || userPosts.length === 0)
     return <div>The user has not posted anything yet.</div>;
 
-  return userPosts.map((postWithAuthor) => (
-    <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
-  ));
+  return (
+    <div className="overflow-y-auto">
+      {userPosts.map((postWithAuthor) => (
+        <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
+      ))}
+    </div>
+  );
 };
 
 const UserProfile: NextPage<{ username: string }> = ({ username }) => {
@@ -35,27 +40,29 @@ const UserProfile: NextPage<{ username: string }> = ({ username }) => {
       <Head>
         <title>{userProfile.username}</title>
       </Head>
-      <div className="flex h-48 w-full flex-col justify-end bg-slate-600">
-        {/* banner */}
-        <Image
-          src={userProfile.imageUrl}
-          alt={`${userProfile.username ?? ""}'s profile image`}
-          width={144}
-          height={144}
-          className="-mb-[64px] ml-4 rounded-full border-4 border-black bg-black"
-        />
-      </div>
-      <div className="w-full border-b border-slate-400 px-6 pb-5 font-bold">
-        <div className="flex h-[72px] items-center justify-end">
-          {isSignedIn && user.username === username && (
-            <button className="h-fit rounded-full border border-slate-400 px-5 py-2">
-              Edit profile
-            </button>
-          )}
+      <Container>
+        <div className="flex h-48 w-full flex-col justify-end bg-slate-600">
+          {/* banner */}
+          <Image
+            src={userProfile.imageUrl}
+            alt={`${userProfile.username ?? ""}'s profile image`}
+            width={144}
+            height={144}
+            className="-mb-[64px] ml-4 rounded-full border-4 border-zinc-900 bg-zinc-900"
+          />
         </div>
-        <div className="text-2xl ">@{userProfile.username ?? ""}</div>
-      </div>
-      <UserProfileFeed authorId={userProfile.id} />
+        <div className="w-full border-b border-zinc-700 px-6 pb-5 font-bold">
+          <div className="flex h-[72px] items-center justify-end">
+            {isSignedIn && user.username === username && (
+              <button className="h-fit rounded-full border border-zinc-400 px-5 py-2">
+                Edit profile
+              </button>
+            )}
+          </div>
+          <div className="text-2xl ">@{userProfile.username ?? ""}</div>
+        </div>
+        <UserProfileFeed authorId={userProfile.id} />
+      </Container>
     </>
   );
 };

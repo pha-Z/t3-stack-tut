@@ -1,5 +1,6 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import { Container } from "~/components/container";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { api } from "~/utils/api";
@@ -11,12 +12,12 @@ const SinglePostPage: NextPage<{ postId: string }> = ({ postId }) => {
     return <div className="flex justify-center text-4xl">404</div>;
 
   return (
-    <>
+    <Container>
       <Head>
         <title>{`${postWithAuthor.post.content} - @${postWithAuthor.author.username}`}</title>
       </Head>
       <PostView post={postWithAuthor.post} author={postWithAuthor.author} />
-    </>
+    </Container>
   );
 };
 

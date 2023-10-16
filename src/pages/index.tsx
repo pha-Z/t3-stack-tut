@@ -10,6 +10,7 @@ import { postContentSchema } from "~/schemas/postSchema";
 import { type z } from "zod";
 import { PostView } from "~/components/postview";
 import Image from "next/image";
+import { Container } from "~/components/container";
 
 dayjs.extend(relativeTime);
 
@@ -38,37 +39,39 @@ const CreatePostWizard = () => {
   if (!user) return;
 
   return (
-    <form
-      className="flex items-center gap-3 text-2xl"
-      onSubmit={(e) => void handleSubmit((post) => createPost(post))(e)} // explicit `e`, otherwise it doesnt preventDefault 🤷‍♂️
-    >
+    <div className="flex items-center gap-5">
       <Image
         src={user.imageUrl}
         alt={`${user.username ?? ""}'s profile image`}
-        width={56}
-        height={56}
+        width={72}
+        height={72}
         className="rounded-full"
         quality={100}
       />
-      <input
-        {...register("content")}
-        type="text"
-        autoComplete="off"
-        placeholder="type some emojis... 👀"
-        className="bg-transparent px-2 outline-none"
-        onKeyDown={(e) =>
-          e.key === "Enter" &&
-          errors.content &&
-          toast.error(`${errors.content.message}`)
-        }
-      />
-      <button
-        disabled={isSubmitting || !!errors.content}
-        className="flex h-[50px] min-w-[50px] items-center justify-center rounded-full bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700"
+      <form
+        className="flex h-12 items-center text-2xl"
+        onSubmit={(e) => void handleSubmit((post) => createPost(post))(e)} // explicit `e`, otherwise it doesnt preventDefault 🤷‍♂️
       >
-        {isSubmitting ? <LoadingSpinner size={20} /> : "📢"}
-      </button>
-    </form>
+        <input
+          {...register("content")}
+          type="text"
+          autoComplete="off"
+          placeholder="type some emojis... 👀"
+          className="h-full rounded-full bg-zinc-800 pl-6 pr-16 outline-none focus:outline focus:outline-zinc-600"
+          onKeyDown={(e) =>
+            e.key === "Enter" &&
+            errors.content &&
+            toast.error(`${errors.content.message}`)
+          }
+        />
+        <button
+          disabled={isSubmitting || !!errors.content}
+          className="-ml-[50px] flex h-[50px] min-w-[50px] items-center justify-center rounded-full border-r-[3px] border-zinc-600 hover:border-b disabled:border-zinc-800"
+        >
+          {isSubmitting ? <LoadingSpinner size={20} /> : "📢"}
+        </button>
+      </form>
+    </div>
   );
 };
 
@@ -78,13 +81,9 @@ const Feed = () => {
   if (postsLoading) return <LoadingPage />;
   if (!data) return <div>Something went wrong</div>;
 
-  return (
-    <div className="">
-      {data.map((postWithAuthor) => (
-        <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
-      ))}
-    </div>
-  );
+  return data.map((postWithAuthor) => (
+    <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
+  ));
 };
 
 export default function Home() {
@@ -96,12 +95,12 @@ export default function Home() {
   if (!userLoaded) return <div />;
 
   return (
-    <>
-      <div className="h-22 flex items-center justify-between border-b border-slate-400 p-4">
+    <Container>
+      <div className="h-22 sticky top-0 flex items-center justify-between border-b border-zinc-700 bg-zinc-950 p-4">
         <CreatePostWizard />
         {isSignedIn ? <SignOutButton /> : <SignInButton />}
       </div>
       <Feed />
-    </>
+    </Container>
   );
 }
