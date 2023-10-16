@@ -9,7 +9,7 @@ export const postContentSchema = z.object({
       message: "use emojis only!",
     })
     // check that every array element (split at whitespace) is not a number (NaN)
-    // required because numbers bypass emoji regex 🥴
+    // required because integer numbers bypass emoji regex 🥴
     .refine(
       (content: string) =>
         content
