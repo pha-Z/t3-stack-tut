@@ -22,10 +22,10 @@ const CreatePostWizard = () => {
   } = useForm<z.infer<typeof postContentSchema>>({
     resolver: zodResolver(postContentSchema),
   });
-  // const ctx = api.useContext(); // dont inline this or invalidate() wont work as expected 🤷‍♂️
+  const ctx = api.useContext(); // dont inline this or invalidate() wont work as expected
   const { mutate: createPost } = api.posts.create.useMutation({
     onSuccess: () => {
-      // void ctx.posts.invalidate();
+      void ctx.posts.invalidate();
       reset();
     },
     onError: (e) => {
