@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import type { RouterOutputs } from "~/utils/api";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import type { RouterOutputs } from "~/utils/api";
 
 dayjs.extend(relativeTime);
 

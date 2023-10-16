@@ -1,6 +1,5 @@
 import { clerkClient } from "@clerk/nextjs";
 import type { Post } from "@prisma/client";
-import { contextProps } from "@trpc/react-query/shared";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis/nodejs";
