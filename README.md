@@ -1,3 +1,13 @@
+[https://t3-stack-tut-mu.vercel.app/](https://t3-stack-tut-mu.vercel.app/)
+
+### third parties
+- Vercel for deployment
+- PlanetScale for db
+- upstash for ratelimit
+- axiom for logging
+- [Clerk](https://clerk.com/docs) instead of NextAuth.js
+
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
@@ -10,7 +20,7 @@ If you are not familiar with the different technologies used in this project, pl
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
+- [Prisma](https://prisma.io).
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 
