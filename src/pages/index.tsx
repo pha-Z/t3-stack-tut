@@ -59,7 +59,7 @@ const CreatePostWizard = () => {
           type="text"
           autoComplete="off"
           placeholder="type some emojis... 👀"
-          className="h-full rounded-full bg-zinc-800 pl-6 pr-8 outline-none focus:outline focus:outline-zinc-600 sm:text-lg md:pr-16 md:text-2xl"
+          className="h-full rounded-full bg-zinc-800 pl-6 pr-8 outline-none focus:outline focus:outline-zinc-600 sm:text-2xl md:pr-16"
           onKeyDown={(e) =>
             e.key === "Enter" &&
             errors.content &&
