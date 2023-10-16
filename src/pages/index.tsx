@@ -39,17 +39,19 @@ const CreatePostWizard = () => {
   if (!user) return;
 
   return (
-    <div className="flex items-center gap-5">
-      <Image
-        src={user.imageUrl}
-        alt={`${user.username ?? ""}'s profile image`}
-        width={72}
-        height={72}
-        className="rounded-full"
-        quality={100}
-      />
+    <div className="flex items-center gap-3 sm:gap-5">
+      <div className="wrapper-div-moment">
+        <Image
+          src={user.imageUrl}
+          alt={`${user.username ?? ""}'s profile image`}
+          width={72}
+          height={72}
+          className="rounded-full"
+          quality={100}
+        />
+      </div>
       <form
-        className="flex h-12 items-center text-2xl"
+        className="flex h-12 items-center"
         onSubmit={(e) => void handleSubmit((post) => createPost(post))(e)} // explicit `e`, otherwise it doesnt preventDefault 🤷‍♂️
       >
         <input
@@ -57,7 +59,7 @@ const CreatePostWizard = () => {
           type="text"
           autoComplete="off"
           placeholder="type some emojis... 👀"
-          className="h-full rounded-full bg-zinc-800 pl-6 pr-16 outline-none focus:outline focus:outline-zinc-600"
+          className="h-full rounded-full bg-zinc-800 pl-6 pr-8 outline-none focus:outline focus:outline-zinc-600 sm:text-lg md:pr-16 md:text-2xl"
           onKeyDown={(e) =>
             e.key === "Enter" &&
             errors.content &&
