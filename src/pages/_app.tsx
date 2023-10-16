@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 import Head from "next/head";
-import { Container } from "~/components/container";
+import { Github } from "~/components/github";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -16,9 +16,10 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster position="bottom-center" />
-      <Container>
+      <Github />
+      <main className="flex min-h-screen flex-col items-center">
         <Component {...pageProps} />
-      </Container>
+      </main>
     </ClerkProvider>
   );
 };
